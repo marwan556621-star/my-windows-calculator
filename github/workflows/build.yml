@@ -1,0 +1,29 @@
+name: Build Windows App
+on: [push, workflow_dispatch]
+env:
+  FLET_CLI_NO_RICH_OUTPUT: 1
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Flet
+        run: pip install flet
+
+      - name: Build Windows EXE
+        run: flet build windows --verbose
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-windows-calculator
+          path: build/windows/
