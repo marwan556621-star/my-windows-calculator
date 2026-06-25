@@ -2,6 +2,7 @@ name: Build Windows App
 on: [push, workflow_dispatch]
 env:
   FLET_CLI_NO_RICH_OUTPUT: 1
+  PYTHONUTF8: 1
 jobs:
   build:
     runs-on: windows-latest
@@ -18,17 +19,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
 
       - name: Install Flet
         run: pip install flet
 
       - name: Build Windows EXE
-        # Fixed: Calling flet directly instead of using python -m
+        # Flet will now automatically download its own matching Flutter SDK here
         run: flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
