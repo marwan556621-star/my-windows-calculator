@@ -7,6 +7,13 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Blindfold Pre-installed Anaconda
+        shell: pwsh
+        run: |
+          # Instantly rename the server's Anaconda folders so background tools can't find them
+          if (Test-Path "C:\Miniconda") { Rename-Item -Path "C:\Miniconda" -NewName "C:\HiddenConda" -Force -ErrorAction SilentlyContinue }
+          if (Test-Path "C:\Miniconda3") { Rename-Item -Path "C:\Miniconda3" -NewName "C:\HiddenConda3" -Force -ErrorAction SilentlyContinue }
       
       - uses: actions/setup-python@v5
         with:
@@ -18,18 +25,10 @@ jobs:
           cache: true
 
       - name: Install Flet
-        shell: pwsh
-        run: |
-          # Forcefully remove Anaconda paths from the server's memory
-          $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'Conda' -and $_ -notmatch 'Anaconda' }) -join ';'
-          python -m pip install flet
+        run: pip install flet
 
       - name: Build Windows EXE
-        shell: pwsh
-        run: |
-          # Forcefully remove Anaconda paths again before building
-          $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'Conda' -and $_ -notmatch 'Anaconda' }) -join ';'
-          python -m flet build windows --verbose
+        run: python -m flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
         with:
