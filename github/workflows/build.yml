@@ -18,11 +18,18 @@ jobs:
           cache: true
 
       - name: Install Flet
-        run: pip install flet
+        shell: pwsh
+        run: |
+          # Forcefully remove Anaconda paths from the server's memory
+          $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'Conda' -and $_ -notmatch 'Anaconda' }) -join ';'
+          python -m pip install flet
 
       - name: Build Windows EXE
-        # Using python -m prevents "command not found" errors on Windows runners
-        run: python -m flet build windows --verbose
+        shell: pwsh
+        run: |
+          # Forcefully remove Anaconda paths again before building
+          $env:Path = ($env:Path -split ';' | Where-Object { $_ -notmatch 'Conda' -and $_ -notmatch 'Anaconda' }) -join ';'
+          python -m flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
         with:
