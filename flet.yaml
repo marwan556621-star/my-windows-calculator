@@ -1,0 +1,6 @@
+# This tells Flet exactly how to package your Windows app and icon
+app:
+  name: "Neon Calculator"
+  product_name: "Neon Calculator"
+  executable_name: "NeonCalculator"
+  icon: "icon.png"
