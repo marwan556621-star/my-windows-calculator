@@ -11,7 +11,7 @@ jobs:
       - name: Blindfold Pre-installed Anaconda
         shell: pwsh
         run: |
-          # Instantly rename the server's Anaconda folders so background tools can't find them
+          # Keep Anaconda hidden so it doesn't hijack the build
           if (Test-Path "C:\Miniconda") { Rename-Item -Path "C:\Miniconda" -NewName "C:\HiddenConda" -Force -ErrorAction SilentlyContinue }
           if (Test-Path "C:\Miniconda3") { Rename-Item -Path "C:\Miniconda3" -NewName "C:\HiddenConda3" -Force -ErrorAction SilentlyContinue }
       
@@ -28,7 +28,8 @@ jobs:
         run: pip install flet
 
       - name: Build Windows EXE
-        run: python -m flet build windows --verbose
+        # Fixed: Calling flet directly instead of using python -m
+        run: flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
         with:
