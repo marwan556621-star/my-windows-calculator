@@ -23,8 +23,21 @@ jobs:
       - name: Install Flet
         run: pip install flet
 
+      - name: Detect Flutter Version Needed
+        shell: bash
+        run: |
+          # Ask Flet exactly what version it requires to avoid crashes
+          FLUTTER_VER=$(python -c "import flet.version; print(flet.version.flutter_version)")
+          echo "FLUTTER_VER=$FLUTTER_VER" >> $GITHUB_ENV
+
+      - name: Install Exact Flutter Version
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VER }}
+          channel: 'stable'
+          cache: true
+
       - name: Build Windows EXE
-        # Flet will now automatically download its own matching Flutter SDK here
         run: flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
