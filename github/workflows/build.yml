@@ -21,7 +21,8 @@ jobs:
         run: pip install flet
 
       - name: Build Windows EXE
-        run: flet build windows --verbose
+        # Using python -m prevents "command not found" errors on Windows runners
+        run: python -m flet build windows --verbose
         
       - uses: actions/upload-artifact@v4
         with:
