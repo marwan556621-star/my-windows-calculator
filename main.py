@@ -1,13 +1,20 @@
 import flet as ft
 
 def main(page: ft.Page):
+    # 1. Performance Locks: Stop the app from checking OS settings
+    page.theme_mode = ft.ThemeMode.DARK 
+    page.window_prevent_close = False
+    page.window_bgcolor = ft.colors.BLACK # Forces solid background, disables transparent compositing
+    
+    # Window setup
     page.title = "Neon Calculator"
     page.bgcolor = "#0B0C10"
     page.window_width = 350
     page.window_height = 500
     page.window_resizable = False
+    page.padding = 15
     
-    # Calculator display window with a cyan neon glow border
+    # Display setup
     display = ft.Text(value="0", color="#66FCF1", size=38, text_align=ft.TextAlign.RIGHT)
     
     def btn_click(e):
@@ -16,7 +23,6 @@ def main(page: ft.Page):
             display.value = "0"
         elif data == "=":
             try:
-                # Handle standard math symbols
                 expr = display.value.replace("×", "*").replace("÷", "/")
                 display.value = str(eval(expr))
             except:
@@ -26,28 +32,27 @@ def main(page: ft.Page):
                 display.value = data
             else:
                 display.value += data
+        
+        # Only update the screen exactly when a button is pressed
         page.update()
 
-    # Helper function to generate styled neon buttons
     def neon_button(text, color="#45A29E"):
-        return ft.Container(
-            content=ft.TextButton(
-                text=text,
-                on_click=btn_click,
-                style=ft.ButtonStyle(
-                    color=color,
-                    text_style=ft.TextStyle(size=22, weight=ft.FontWeight.BOLD),
-                ),
+        # Stripped down button: removed the extra Container wrapper to save RAM
+        return ft.TextButton(
+            text=text,
+            on_click=btn_click,
+            style=ft.ButtonStyle(
+                color=color,
+                bgcolor="#1F2833",
+                shape=ft.RoundedRectangleBorder(radius=8),
+                side=ft.BorderSide(1, color),
+                text_style=ft.TextStyle(size=22, weight=ft.FontWeight.BOLD),
             ),
-            alignment=ft.alignment.center,
-            bgcolor="#1F2833",
-            border=ft.border.all(1, color),
-            border_radius=8,
             expand=1,
             height=60
         )
 
-    # Building the interface layout
+    # Simplified Layout
     page.add(
         ft.Container(
             content=display,
@@ -56,7 +61,7 @@ def main(page: ft.Page):
             bgcolor="#1F2833",
             border=ft.border.all(2, "#66FCF1"),
             border_radius=10,
-            margin=ft.margin.only(bottom=15, top=10)
+            margin=ft.margin.only(bottom=15, top=5)
         ),
         ft.Column(
             controls=[
